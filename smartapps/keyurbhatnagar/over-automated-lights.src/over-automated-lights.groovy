@@ -26,8 +26,8 @@ definition(
     author: "Keyur Bhatnagar",
     description: "Controls toilet lights",
     category: "Convenience",
-    iconUrl: "https://s3.amazonaws.com/smartapp-icons/Meta/garage_contact.png",
-    iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Meta/garage_contact@2x.png"
+    iconUrl: "http://cdn.device-icons.smartthings.com/Lighting/light13-icn@2x.png",
+    iconX2Url: "http://cdn.device-icons.smartthings.com/Lighting/light13-icn@2x.png"
 )
 
 preferences {
