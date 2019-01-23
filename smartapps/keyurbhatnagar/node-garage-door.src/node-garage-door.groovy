@@ -33,7 +33,7 @@ preferences {a
 	section("Garage door") {
 		input "doorSensor", "capability.contactSensor", title: "Which sensor?"
 		input "doorSwitch", "capability.momentary", title: "Which switch?"
-        input "garageDoor", "device.nodeGarageDoorOpener", title: "Simulated Garage Door Control?"
+        input "garageDoor", "capability.garageDoorControl", title: "Which garage door?"
         input "doorAcceleration", "capability.accelerationSensor", title: "Acceleration sensor?"
 		input "openThreshold", "number", title: "Warn when open longer than (optional)",description: "Number of minutes", required: false
         input("recipients", "contact", title: "Send notifications to") {
@@ -45,7 +45,7 @@ preferences {a
 def installed() {
 	log.trace "installed()"
     
-    def dni = "543817191"
+    /*def dni = "543817191"
     def garageDoor = getChildDevice(dni)
 	if(!garageDoor) {
     	garageDoor = addChildDevice("keyurbhatnagar", "Node Garage Door Opener", dni, null, [name:"Garage", label:name])
@@ -57,7 +57,7 @@ def installed() {
     	}
   	} else {
     	log.debug "Device already created"
-  	}
+  	}*/
     
 	subscribe()
 }
@@ -69,22 +69,19 @@ def updated() {
 }
 
 def subscribe() {
-	log.debug "present: ${cars.collect{it.displayName + ': ' + it.currentPresence}}"
-	subscribe(doorSensor, "contact", garageDoorContact)
+	log.trace "subscribe()"
     subscribe(garageDoor, "control", garageDoorControl)
-    
-    if(doorAcceleration) {
-    	subscribe(doorAcceleration, "acceleration", accelerationActive)
-    }
+	subscribe(doorSensor, "contact", garageDoorContact)
+    subscribe(doorAcceleration, "acceleration", accelerationActive)
 }
 
 def garageDoorControl(evt)
 {
 	log.info "garageDoorControl, $evt.name: $evt.value"
     
-    def dni = "543817191"
-    def garageDoor = getChildDevice(dni)
-	if(garageDoor) {
+    //def dni = "543817191"
+    //def garageDoor = getChildDevice(dni)
+	//if(garageDoor) {
 		if (evt.value == "opening") {
         	openDoor()
         }
@@ -92,42 +89,40 @@ def garageDoorControl(evt)
         if (evt.value == "closing") {
         	closeDoor()
         }
-    } else {
-    	log.debug "Device not Found!"
-    }
+    //} else {
+    //	log.debug "Device not Found!"
+    //}
 }
 
 def garageDoorContact(evt)
 {
 	log.info "garageDoorContact, $evt.name: $evt.value"
     
-    def dni = "543817191"
-    def garageDoor = getChildDevice(dni)
-	if(garageDoor) {
+    //def dni = "543817191"
+    //def garageDoor = getChildDevice(dni)
+	//if(garageDoor) {
 		if (evt.value == "open") {
-        	log.debug "Setting Device State: Open"
+        	log.debug "Setting Device State: Opening"
     		garageDoor.setDoorState('opening')
-		//	schedule("0 * * * * ?", "doorOpenCheck")
 		}
 		else {
         	log.debug "Setting Device State: Closed"
     		garageDoor.setDoorState('closed')
-		//	unschedule("doorOpenCheck")
 		}
-    } else {
-    	log.debug "Device not Found!"
-    }
+    //} else {
+    //	log.debug "Device not Found!"
+    //}
 }
 
 
 def accelerationActive(evt)
 {
 	log.info "$evt.name: $evt.value"
-    log.info "garageDoor.currentDoor: $garageDoor.currentDoor"
 
-	def dni = "543817191"
-    def garageDoor = getChildDevice(dni)
-	if(garageDoor) {
+	//def dni = "543817191"
+    //def garageDoor = getChildDevice(dni)
+	//if(garageDoor) {
+    	log.info "garageDoor.currentDoor: $garageDoor.currentDoor"
 		if (garageDoor.currentDoor == "closed") {
         	if(evt.value == "active") {
         		log.debug "Door was closing. Won't set the state, will let the contact sensor set the opening state"
@@ -149,7 +144,6 @@ def accelerationActive(evt)
     	if (garageDoor.currentDoor == "closing") {
         	if(evt.value == "inactive") {
 				log.debug "Door was closing. Won't set the state, will let the contact sensor set the closed state"
-        		//garageDoor.setDoorState('closed')
 			} else {
         		log.debug "Current state closing, no change on active"
         	}
@@ -163,35 +157,37 @@ def accelerationActive(evt)
         		log.debug "Current state open, no change on inactive"
         	}
 		}
-    } else {
-    	log.debug "Device not Found!"
-    }
+    //} else {
+    //	log.debug "Device not Found!"
+    //}
 }
 
 private openDoor()
 {
-	def dni = "543817191"
-    def garageDoor = getChildDevice(dni)
-	if(garageDoor) {
-		if (garageDoor.currentContact == "closed") {
+	log.debug "Opening Door!"
+	//def dni = "543817191"
+    //def garageDoor = getChildDevice(dni)
+	//if(garageDoor) {
+		if (garageDoor.currentDoor == "closed") {
 			log.debug "opening door"
 			doorSwitch.push()
 		}
-    } else {
-    	log.debug "Device not Found!"
-    }
+    //} else {
+    //	log.debug "Device not Found!"
+    //}
 }
 
 private closeDoor()
 {
-	def dni = "543817191"
-    def garageDoor = getChildDevice(dni)
-	if(garageDoor) {
-		if (garageDoor.currentContact == "open") {
+	log.debug "Closing Door!"
+	//def dni = "543817191"
+    //def garageDoor = getChildDevice(dni)
+	//if(garageDoor) {
+		if (garageDoor.currentDoor == "open") {
 			log.debug "closing door"
 			doorSwitch.push()
 		}
-    } else {
-    	log.debug "Device not Found!"
-    }
+    //} else {
+    //	log.debug "Device not Found!"
+    //}
 }
