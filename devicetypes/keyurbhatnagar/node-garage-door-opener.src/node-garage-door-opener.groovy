@@ -24,6 +24,8 @@ metadata {
 		capability "Health Check"
         
         command "setDoorState", ["string"]
+        
+        attribute "control", "string"
 	}
 
 	simulator {
@@ -55,25 +57,30 @@ def parse(String description) {
 }
 
 def open() {
-    sendEvent(name: "control", value: "opening")
+	log.trace "open"
+    sendEvent(name: "control", value: "opening", isStateChange: true)
     runIn(6, finishControl)
 }
 
 def close() {
-    sendEvent(name: "control", value: "closing")
+	log.trace "close"
+    sendEvent(name: "control", value: "closing", isStateChange: true)
 	runIn(6, finishControl)
 }
 
 def finishControl() {
-    sendEvent(name: "contact", value: "NA")
+	log.trace "finishControl"
+    sendEvent(name: "control", value: "NA", isStateChange: true)
 }
 
 def finishOpening() {
+	log.trace "finishOpening"
     sendEvent(name: "door", value: "open")
     sendEvent(name: "contact", value: "open")
 }
 
 def finishClosing() {
+	log.trace "finishClosing"
     sendEvent(name: "door", value: "closed")
     sendEvent(name: "contact", value: "closed")
 }
@@ -93,17 +100,17 @@ def setDoorState(stateParam) {
     switch(stateParam)
     {
     case 'open':
-    	finishOpening();
-    	break;
-    case 'close':
-    	finishClosing();
-        break;
+    	finishOpening()
+    	break
+    case 'closed':
+    	finishClosing()
+        break
     case 'opening':
-    	open();
-        break;
+    	sendEvent(name: "door", value: "opening")
+        break
     case 'closing':
-    	close();
-        break;
+    	sendEvent(name: "door", value: "closing")
+        break
     default:
     	log.trace "Invalid Door State"
         break;
@@ -116,4 +123,6 @@ private initialize() {
 	sendEvent(name: "DeviceWatch-DeviceStatus", value: "online")
 	sendEvent(name: "healthStatus", value: "online")
 	sendEvent(name: "DeviceWatch-Enroll", value: [protocol: "cloud", scheme:"untracked"].encodeAsJson(), displayed: false)
+    sendEvent(name: "door", value: "closed")
+    sendEvent(name: "contact", value: "closed")
 }
