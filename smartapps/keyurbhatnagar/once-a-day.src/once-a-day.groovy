@@ -50,10 +50,17 @@ def updated(settings) {
 def startTimerCallback() {
 	log.debug "Checking door status"
 	
+    def allClosed = true
 	contacts.each { contact -> 
 					if( contact.currentValue("contact") == "open" ) {
 						log.debug "$contact was opened, sending push message to user"
 						sendPush("Your ${contact.label ?: contact.name} is Open!")
+                        allClosed = false
 					}
 				}
+                
+    if( allClosed ) {
+    	sendPush("All doors are closed!")
+    }
+    
 }
