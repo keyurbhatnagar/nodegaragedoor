@@ -73,7 +73,7 @@ def onHandler(evt) {
 	//log.debug onSwitches()
     if( state.ignoreTrigger ) {
         log.debug "onHandler Ignoring trigger"
-    	state.ignoreOnTrigger = false
+    	state.ignoreTrigger = false
     }
     else {
 		onSwitches()?.on()
@@ -85,7 +85,7 @@ def offHandler(evt) {
 	//log.debug offSwitches()
     if( state.ignoreTrigger ) {
         log.debug "offHandler Ignoring trigger"
-    	state.ignoreOnTrigger = false
+    	state.ignoreTrigger = false
     }
     else {	
 		offSwitches()?.off()
